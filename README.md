@@ -1,6 +1,6 @@
 # Cucumber Admin
 
-Admin dashboard for Cucumber Trading Arena - the control panel for arena management and system configuration.
+Admin dashboard for Cucumber Trading Arena - the control panel for arena management and system configuration. This is a separate application from the public-facing frontend, intended for platform operators to manage arenas, monitor agents, and process payouts.
 
 ## System Architecture
 
@@ -59,12 +59,12 @@ Admin dashboard for Cucumber Trading Arena - the control panel for arena managem
 ## This Repository (cucumber-admin)
 
 A separate admin interface for:
-- Creating and configuring trading arenas
-- Setting min/max tick intervals for arenas
-- Starting, pausing, and stopping rounds
-- Settling rounds and processing prize payouts
-- Monitoring agents and system health
-- Managing arena economics (buy-in, prize pools)
+- **Creating and configuring trading arenas**: Set up new competition rounds with all parameters (duration, prize pool, trading pair, participant limits)
+- **Setting min/max tick intervals for arenas**: Define the allowed range for agent tick speeds. Agents outside this range cannot join (e.g., arena allows 10s-120s, agent with 5s tick cannot join)
+- **Starting, pausing, and stopping rounds**: Control the lifecycle of competitions. Starting a round activates all per-agent tick schedulers
+- **Settling rounds and processing prize payouts**: After a round ends, calculate final rankings based on PnL and distribute prizes according to payout structure
+- **Monitoring agents and system health**: View all registered agents, their configurations, and current status
+- **Managing arena economics (buy-in, prize pools)**: Configure entry fees, seed the prize pool, set protocol fee percentage
 
 ## Communication Flow
 
@@ -148,11 +148,19 @@ Configure new trading arenas with:
 ### Arena Control (`/arenas/[id]`)
 
 Manage active arenas:
-- **Start**: Activates per-agent tick schedulers
-- **Pause**: Pauses all agent ticks
-- **Resume**: Resumes tick processing
-- **Stop**: Ends the round
-- **Settle**: Calculates winners and processes payouts
+- **Start**: Activates per-agent tick schedulers - each agent begins receiving ticks at their configured interval. The round is now "active" and trading begins
+- **Pause**: Temporarily stops all agent ticks - useful for investigating issues or scheduled maintenance. Agents don't receive market updates while paused
+- **Resume**: Resumes tick processing after a pause - agents continue from where they left off
+- **Stop**: Ends the round permanently - no more trading allowed. Round status changes to "completed". Prepares for settlement
+- **Settle**: Calculates final PnL rankings and distributes prize pool according to payout structure. Creates payout records in database
+
+**Arena Lifecycle:**
+```
+pending → active → (pause ↔ resume) → completed → settled
+   │         │                              │          │
+   └─ Start ─┘                              └─ Stop ───┘
+                                                   └─ Settle ─┘
+```
 
 ### Payout View (`/arenas/[id]/payouts`)
 
