@@ -309,3 +309,111 @@ When creating an arena, you set the allowed tick interval range:
 | Resume Round | `POST /v1/arena/:id/resume` | Resumes tick scheduler |
 | Stop Round | `POST /v1/rounds/:id/stop` | Ends round, stops all timers |
 | Settle Round | `POST /v1/rounds/:id/settle` | Calculates winners, creates payouts |
+
+## Railway Deployment
+
+### 1. Connect Repository
+1. Go to [Railway](https://railway.app) and open your Cucumber project
+2. Click "New Service" → "GitHub Repo"
+3. Select `h-sharafzad91/cucumber-admin`
+
+### 2. Configure Environment Variables
+In Railway dashboard, add these variables:
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `NEXT_PUBLIC_API_URL` | `https://cucumber-cerebellum-production.up.railway.app` | Your Cerebellum Railway URL |
+
+### 3. Build Settings
+Railway auto-detects Next.js. Verify these settings:
+- **Build Command**: `npm run build`
+- **Start Command**: `npm start`
+- **Watch Paths**: Leave default
+
+### 4. Domain Setup
+Admin should be deployed on a separate domain from the public frontend:
+
+| Option | Domain Example | Security |
+|--------|----------------|----------|
+| Railway subdomain | `cucumber-admin-production.up.railway.app` | Basic |
+| Custom subdomain | `admin.cucumber.trade` | Recommended |
+| Private (no public domain) | VPN access only | Most secure |
+
+**Recommended:** Use a non-obvious domain name for admin panel.
+
+### 5. Access Control (Production)
+For production deployments, implement access control:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  ADMIN ACCESS OPTIONS                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Option 1: IP Whitelisting                                  │
+│  └─► Configure Railway to only accept connections from      │
+│      specific IP addresses (use Cloudflare Access)          │
+│                                                              │
+│  Option 2: VPN-Only Access                                  │
+│  └─► Don't assign public domain                             │
+│  └─► Access via Railway private networking + VPN            │
+│                                                              │
+│  Option 3: Password Protection (MVP)                        │
+│  └─► Add environment variable ADMIN_PASSWORD                │
+│  └─► Implement basic auth middleware                        │
+│                                                              │
+│  Option 4: Wallet Signature (Production)                    │
+│  └─► Require admin wallet to sign message                   │
+│  └─► Verify signature before granting access                │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Railway Architecture (Admin Position)
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    RAILWAY PROJECT                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌─────────────────┐    ┌─────────────────┐                │
+│  │  cucumber-web   │    │ ★ cucumber-    │                │
+│  │   (Next.js)     │    │    admin ★     │                │
+│  │  Public Domain  │    │   (Next.js)     │                │
+│  │                 │    │  Admin Domain   │                │
+│  │  app.cucumber.  │    │  (Restricted)   │                │
+│  │    trade        │    │                 │                │
+│  └────────┬────────┘    └────────┬────────┘                │
+│           │                      │                          │
+│           └──────────┬───────────┘                          │
+│                      ▼                                       │
+│           ┌─────────────────┐                               │
+│           │cucumber-cerebellum│                              │
+│           │   (Node.js)     │                               │
+│           │  Public Domain  │                               │
+│           └────────┬────────┘                               │
+│                    │                                         │
+│        ┌───────────┼───────────┐                            │
+│        ▼           ▼           ▼                            │
+│  ┌──────────┐ ┌──────────┐ ┌─────────────────┐             │
+│  │PostgreSQL│ │  Redis   │ │ cucumber-cortex │             │
+│  │ (Plugin) │ │ (Plugin) │ │   (Python)      │             │
+│  └──────────┘ └──────────┘ └─────────────────┘             │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Deployment Order
+Deploy Admin LAST after all other services are running:
+1. PostgreSQL plugin
+2. Redis plugin
+3. cucumber-cerebellum
+4. cucumber-cortex
+5. cucumber-web
+6. cucumber-admin ← This service (last)
+
+### Security Checklist
+Before going live with admin panel:
+- [ ] Use non-obvious domain name
+- [ ] Implement access control (IP/VPN/password)
+- [ ] Enable HTTPS only
+- [ ] Set up monitoring/alerting for admin actions
+- [ ] Consider audit logging for sensitive operations
