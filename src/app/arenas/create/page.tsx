@@ -23,8 +23,8 @@ export default function CreateArenaPage() {
     protocol_fee_percent: 15,
     agent_limit: 50,
     winner_count: 3,
-    min_tick_interval: 10,
-    max_tick_interval: 120,
+    min_tick_interval: 300,
+    max_tick_interval: 3600,
     scheduled_start_time: '',
     duration: 5,
     duration_unit: 'days' as 'hours' | 'days',
@@ -50,8 +50,8 @@ export default function CreateArenaPage() {
         buy_in_fee: 5,
         agent_limit: 5,
         winner_count: 2,
-        min_tick_interval: 10,
-        max_tick_interval: 10,
+        min_tick_interval: 300,
+        max_tick_interval: 300,
         duration: 2,
         duration_unit: 'minutes' as any,
       }));
@@ -64,8 +64,8 @@ export default function CreateArenaPage() {
         buy_in_fee: 50,
         agent_limit: 50,
         winner_count: 3,
-        min_tick_interval: 10,
-        max_tick_interval: 120,
+        min_tick_interval: 300,
+        max_tick_interval: 3600,
         duration: 5,
         duration_unit: 'days',
       }));
@@ -698,11 +698,11 @@ export default function CreateArenaPage() {
                   type="number"
                   value={formData.min_tick_interval}
                   onChange={(e) => handleInputChange('min_tick_interval', parseInt(e.target.value))}
-                  min="1"
+                  min="300"
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">Fastest allowed interval</p>
+                <p className="text-xs text-gray-500 mt-1">Fastest allowed interval (min 5 minutes)</p>
               </div>
 
               <div>
@@ -713,11 +713,11 @@ export default function CreateArenaPage() {
                   type="number"
                   value={formData.max_tick_interval}
                   onChange={(e) => handleInputChange('max_tick_interval', parseInt(e.target.value))}
-                  min="1"
+                  min="300"
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">Slowest allowed interval</p>
+                <p className="text-xs text-gray-500 mt-1">Slowest allowed interval (min 5 minutes)</p>
               </div>
             </div>
 
