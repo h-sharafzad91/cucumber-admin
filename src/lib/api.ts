@@ -99,24 +99,41 @@ export async function getAgents() {
   return fetchAPI<{ agents: any[] }>('/v1/agents');
 }
 
-export async function activateAgent(id: string) {
-  return fetchAPI<{ agent: any }>(`/v1/agents/${id}/activate`, {
-    method: 'POST',
-    body: JSON.stringify({}),
-  });
-}
-
-export async function deactivateAgent(id: string) {
-  return fetchAPI<{ agent: any }>(`/v1/agents/${id}/deactivate`, {
-    method: 'POST',
-    body: JSON.stringify({}),
-  });
-}
-
 export async function deleteAgent(id: string) {
   const response = await fetch(`${API_URL}/v1/agents/${id}`, { method: 'DELETE' });
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.error || `Failed to delete agent: ${response.status}`);
   }
+}
+
+export async function getTrades(roundId: string) {
+  return fetchAPI<{ trades: any[] }>(`/v1/arena/${roundId}/trades`);
+}
+
+export async function getLeaderboard(roundId: string) {
+  return fetchAPI<{ leaderboard: any[] }>(`/v1/leaderboard/${roundId}`);
+}
+
+export async function getAgentReasoning(agentId: string, roundId: string, limit: number = 20) {
+  return fetchAPI<{ reasoning: any[] }>(`/v1/agents/${agentId}/reasoning/${roundId}?limit=${limit}`);
+}
+
+export async function getAllReasoning(roundId: string, agentIds: string[]) {
+  const results = await Promise.all(
+    agentIds.map((agentId) => getAgentReasoning(agentId, roundId, 50).catch(() => ({ reasoning: [] })))
+  );
+
+  const allReasoning = results
+    .flatMap((r, i) =>
+      (r.reasoning || []).map((item: any) => ({ ...item, agent_id: agentIds[i] }))
+    )
+    .sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime());
+
+  return { reasoning: allReasoning };
+}
+
+export async function getMarketPrice(tradingPair?: string) {
+  const params = tradingPair ? `?trading_pair=${encodeURIComponent(tradingPair)}` : '';
+  return fetchAPI<{ price: number; source: string; trading_pair: string }>(`/v1/market/price${params}`);
 }

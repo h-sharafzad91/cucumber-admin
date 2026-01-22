@@ -10,7 +10,6 @@ export default function AdminDashboard() {
     activeRounds: 0,
     completedRounds: 0,
     totalAgents: 0,
-    activeAgents: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +25,6 @@ export default function AdminDashboard() {
           activeRounds: rounds.filter((r: any) => r.status === 'active').length,
           completedRounds: rounds.filter((r: any) => r.status === 'completed').length,
           totalAgents: agents.length,
-          activeAgents: agents.filter((a: any) => a.is_active).length,
         });
       } catch (err) {
         console.error('Failed to fetch stats:', err);
@@ -53,7 +51,7 @@ export default function AdminDashboard() {
         <p className="text-gray-400">Manage arenas, agents, and monitor performance</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
           <div className="text-gray-400 text-sm mb-1">Total Rounds</div>
           <div className="text-3xl font-bold">{stats.totalRounds}</div>
@@ -69,10 +67,6 @@ export default function AdminDashboard() {
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
           <div className="text-gray-400 text-sm mb-1">Total Agents</div>
           <div className="text-3xl font-bold">{stats.totalAgents}</div>
-        </div>
-        <div className="bg-gray-800 rounded-lg p-6 border border-green-500">
-          <div className="text-gray-400 text-sm mb-1">Active Agents</div>
-          <div className="text-3xl font-bold text-green-500">{stats.activeAgents}</div>
         </div>
       </div>
 
@@ -109,7 +103,7 @@ export default function AdminDashboard() {
             Manage Agents
           </h3>
           <p className="text-gray-400">
-            Activate, deactivate, and monitor agent performance
+            View and manage registered agents
           </p>
         </Link>
 

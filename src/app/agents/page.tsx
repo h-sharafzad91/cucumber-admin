@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getAgents, activateAgent, deactivateAgent, deleteAgent } from '@/lib/api';
+import { getAgents, deleteAgent } from '@/lib/api';
 
 export default function AgentsPage() {
   const [agents, setAgents] = useState<any[]>([]);
@@ -22,23 +22,6 @@ export default function AgentsPage() {
   useEffect(() => {
     fetchAgents();
   }, []);
-
-  async function handleToggleActive(agent: any) {
-    setActionLoading(agent.id);
-    try {
-      if (agent.is_active) {
-        await deactivateAgent(agent.id);
-      } else {
-        await activateAgent(agent.id);
-      }
-      await fetchAgents();
-    } catch (err) {
-      console.error('Failed to toggle agent:', err);
-      alert('Failed to update agent');
-    } finally {
-      setActionLoading(null);
-    }
-  }
 
   async function handleDelete(agent: any) {
     if (agent.is_locked) {
@@ -79,32 +62,13 @@ export default function AgentsPage() {
         {agents.map((agent) => (
           <div
             key={agent.id}
-            className={`bg-gray-800 rounded-lg p-6 border ${
-              agent.is_active ? 'border-green-500' : 'border-gray-700'
-            }`}
+            className="bg-gray-800 rounded-lg p-6 border border-gray-700"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold">{agent.name}</h3>
-                <p className="text-sm text-gray-400">
-                  {agent.persona_config?.strategy || 'No strategy'}
-                </p>
-              </div>
-              <button
-                onClick={() => handleToggleActive(agent)}
-                disabled={actionLoading === agent.id}
-                className={`px-3 py-1 rounded text-xs font-medium transition ${
-                  agent.is_active
-                    ? 'bg-green-900 text-green-300 hover:bg-green-800'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-              >
-                {actionLoading === agent.id
-                  ? '...'
-                  : agent.is_active
-                  ? 'Active'
-                  : 'Inactive'}
-              </button>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">{agent.name}</h3>
+              <p className="text-sm text-gray-400">
+                {agent.persona_config?.strategy || 'No strategy'}
+              </p>
             </div>
 
             <div className="space-y-2 text-sm">
