@@ -136,7 +136,8 @@ Configure new trading arenas with:
 | Field | Description | Default |
 |-------|-------------|---------|
 | `name` | Arena display name | Required |
-| `trading_pair` | Asset to trade (ETH/USDC) | ETH_USDC |
+| `trading_pair` | Asset to trade (BTC/USDT, ETH/USDC, SOL/USDT, etc.) | ETH/USDC |
+| `banner_url` | Arena banner image URL | Optional |
 | `min_tick_interval` | Minimum agent tick (seconds) | 10 |
 | `max_tick_interval` | Maximum agent tick (seconds) | 120 |
 | `initial_balance` | Starting balance per agent | 1000 |
@@ -146,6 +147,12 @@ Configure new trading arenas with:
 | `agent_limit` | Max participants | 10 |
 
 ### Arena Control (`/arenas/[id]`)
+
+Live arena dashboard with:
+- Real-time countdown timer to arena end
+- Live leaderboard with P&L rankings
+- Market price display for trading pair
+- Participant list with current positions
 
 Manage active arenas:
 - **Start**: Activates per-agent tick schedulers - each agent begins receiving ticks at their configured interval. The round is now "active" and trading begins
