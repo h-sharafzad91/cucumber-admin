@@ -22,7 +22,7 @@ Admin dashboard for Cucumber Trading Arena - the control panel for arena managem
 │          │                 │  ★ cucumber- │                                │
 │          │                 │    admin ★   │                                │
 │          │                 │  (THIS REPO) │                                │
-│          │                 │   Port 3002  │                                │
+│          │                 │   Port 3003  │                                │
 │          │                 │              │                                │
 │          │                 └──────┬───────┘                                │
 │          │                        │                                         │
